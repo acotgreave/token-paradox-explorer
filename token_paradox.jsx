@@ -160,9 +160,50 @@ function Verdict({ priceDecline, usageGrowth }) {
   );
 }
 
+function DataTable({ price, usage, spend }) {
+  const cols = [
+    { label: "Price per token", data: price, color: "#e05c5c" },
+    { label: "Token volume",    data: usage, color: "#4ea8de" },
+    { label: "Total spend",     data: spend, color: "#f0c040" },
+  ];
+  return (
+    <div style={{ background: "#1a1d26", borderRadius: 8, border: "1px solid #2a2d3a", overflow: "hidden" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+        <thead>
+          <tr style={{ background: "#0f1117" }}>
+            <th style={{ padding: "10px 14px", textAlign: "left", color: "#555", fontWeight: 700, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", borderBottom: "1px solid #2a2d3a" }}>Year</th>
+            {cols.map(c => (
+              <th key={c.label} style={{ padding: "10px 14px", textAlign: "right", color: c.color, fontWeight: 700, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", borderBottom: "1px solid #2a2d3a" }}>{c.label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {Array.from({ length: YEARS + 1 }, (_, i) => (
+            <tr key={i} style={{ borderBottom: i < YEARS ? "1px solid #12151e" : "none" }}>
+              <td style={{ padding: "9px 14px", color: "#666", fontWeight: 600 }}>Y{i}</td>
+              {cols.map(c => {
+                const v = c.data[i];
+                const color = c.label === "Total spend"
+                  ? v > 1.5 ? "#e05c5c" : v < 0.7 ? "#4ecb71" : "#f0c040"
+                  : c.color;
+                return (
+                  <td key={c.label} style={{ padding: "9px 14px", textAlign: "right", color, fontFamily: "monospace", fontWeight: c.label === "Total spend" ? 700 : 400 }}>
+                    {v.toFixed(2)}×
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function App() {
   const [priceDecline, setPriceDecline] = useState(0.5);
   const [usageGrowth, setUsageGrowth] = useState(2.0);
+  const [view, setView] = useState("charts");
   const chartColRef = useRef(null);
   const [chartW, setChartW] = useState(0);
 
@@ -241,11 +282,31 @@ export default function App() {
           </div>
         </div>
 
-        {/* Charts column */}
+        {/* Charts / Table column */}
         <div ref={chartColRef} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <MiniChart data={usage}  color="#4ea8de" label="Token volume"    sublabel="how much is being used"           dashed={false} containerWidth={chartW} />
-          <MiniChart data={price}  color="#e05c5c" label="Price per token" sublabel="cost to produce each token"       dashed={false} containerWidth={chartW} />
-          <MiniChart data={spend}  color="#f0c040" label="Total spend"     sublabel="volume × price — the bottom line" dashed={true}  containerWidth={chartW} />
+          <div style={{ display: "flex", gap: 6 }}>
+            {["charts", "table"].map(v => (
+              <button key={v} onClick={() => setView(v)} style={{
+                padding: "5px 12px", borderRadius: 5, cursor: "pointer",
+                border: `1px solid ${view === v ? "#4ea8de" : "#2a2d3a"}`,
+                background: view === v ? "#1a2235" : "#12151e",
+                color: view === v ? "#4ea8de" : "#555",
+                fontSize: 11, fontWeight: 600,
+                textTransform: "uppercase", letterSpacing: "0.06em",
+              }}>
+                {v === "charts" ? "▲ Charts" : "≡ Table"}
+              </button>
+            ))}
+          </div>
+          {view === "charts" ? (
+            <>
+              <MiniChart data={usage}  color="#4ea8de" label="Token volume"    sublabel="how much is being used"           dashed={false} containerWidth={chartW} />
+              <MiniChart data={price}  color="#e05c5c" label="Price per token" sublabel="cost to produce each token"       dashed={false} containerWidth={chartW} />
+              <MiniChart data={spend}  color="#f0c040" label="Total spend"     sublabel="volume × price — the bottom line" dashed={true}  containerWidth={chartW} />
+            </>
+          ) : (
+            <DataTable price={price} usage={usage} spend={spend} />
+          )}
           <Verdict priceDecline={priceDecline} usageGrowth={usageGrowth} />
         </div>
       </div>
