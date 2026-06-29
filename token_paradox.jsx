@@ -185,11 +185,12 @@ export default function App() {
   );
 
   return (
-    <div style={{ background: "#0f1117", minHeight: "100vh", padding: 20, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: "#e0e0e0" }}>
+    <div style={{ background: "#0f1117", minHeight: "100vh", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: "#e0e0e0", display: "flex", justifyContent: "center" }}>
+    <div style={{ width: "100%", maxWidth: 680, padding: 20 }}>
       <div style={{ fontSize: 17, fontWeight: 600, color: "#fff", marginBottom: 4 }}>The Token Paradox Explorer</div>
       <div style={{ fontSize: 12, color: "#666", marginBottom: 20 }}>Total spend = price per token × volume. The first two are inputs; the third is the verdict.</div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 18 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: 14 }}>
 
         {/* Controls */}
         <div style={{ background: "#1a1d26", borderRadius: 10, padding: 16, border: "1px solid #2a2d3a", display: "flex", flexDirection: "column", gap: 18 }}>
@@ -248,6 +249,7 @@ export default function App() {
           <Verdict priceDecline={priceDecline} usageGrowth={usageGrowth} />
         </div>
       </div>
+    </div>
     </div>
   );
 }
